@@ -3,6 +3,7 @@ from nltk.tokenize import RegexpTokenizer
 from unidecode import unidecode
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def buscarSinonimo(busca):
     listaSinonimos = []
@@ -22,11 +23,20 @@ def buscarSinonimo(busca):
             if titulo_element:
                 titulo = titulo_element.get_text()
                 lista = conts[0].select('span a')
-                if 'Sinonimo' in titulo or 'Sinónimos' in titulo :
+                if 'Sinonimo' in titulo or 'Sinónimos' in titulo or 'Sinónimo' in titulo or 'Sinonimos' in titulo:
                     for item in lista:
                         listaSinonimos.append(unidecode(item.get_text()))
     return listaSinonimos
-        
+
+def remover_plural(palavra):
+    padrao_plural = re.compile(r'(\w+)(s|es)$', re.IGNORECASE)
+    correspondencia = padrao_plural.match(palavra)
+    if correspondencia:
+        singular = correspondencia.group(1)
+        return singular
+    else:
+        return palavra
+
 def similaridade(text1, text2):
     f = open(text1, "r", encoding="utf-8")
     texto1 = f.read()
@@ -56,8 +66,12 @@ def similaridade(text1, text2):
     key_word_token01 = [p[0] for cont, p in enumerate(palavras_token01) if cont < 4]
     key_word_token02 = [p[0] for cont, p in enumerate(palavras_token02) if cont < 4]
 
+    key_word_token01 = [remover_plural(palavra) for palavra in key_word_token01]
+    key_word_token02 = [remover_plural(palavra) for palavra in key_word_token02]
+
     print(key_word_token01)
     print(key_word_token02)
+
     contador = 0
     buscar = True
 
@@ -66,15 +80,14 @@ def similaridade(text1, text2):
         for token2 in key_word_token02:
             if(token.lower() == token2.lower()):
                 buscar = False
-                contador +=25
+                contador += 25
 
         if buscar:
             lista = buscarSinonimo(token)
-            print(lista)
             for token in lista:
                 for token2 in key_word_token02:
                     if(token.lower() == token2.lower()):
-                        contador +=12.5
+                        contador += 12.5
 
 
     print("A similaridade é de " + str(contador) +  "%")
