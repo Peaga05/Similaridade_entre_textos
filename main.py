@@ -80,16 +80,16 @@ def similaridade(text1, text2):
         for token2 in key_word_token02:
             if(token.lower() == token2.lower()):
                 buscar = False
-                contador += 25
+                contador += 1
 
         if buscar:
             lista = buscarSinonimo(token)
             for token in lista:
                 for token2 in key_word_token02:
                     if(token.lower() == token2.lower()):
-                        contador += 12.5
+                        contador += 0.5
 
-
-    print("A similaridade é de " + str(contador) +  "%")
+    porcentagem = (contador / len(key_word_token01)) * 100
+    print("A similaridade é de {:.2f}%".format(porcentagem))
 
 similaridade("text1.txt", "text2.txt")
